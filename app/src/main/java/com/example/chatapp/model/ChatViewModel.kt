@@ -1,5 +1,6 @@
 package com.example.chatapp.model
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,9 +17,10 @@ import com.google.firebase.ktx.Firebase
 class ChatViewModel: ViewModel() {
     var database = FirebaseDatabase.getInstance()
     var auth=Firebase.auth
-    var dbRef=database.getReference()
+    var dbRef=database.getReference("message")
     var myEmail by mutableStateOf("")
-    var messeges= mutableListOf<Messege>()
+    var messeges= mutableStateOf(listOf<Messege>())
+
 
 
     init {
@@ -33,10 +35,11 @@ class ChatViewModel: ViewModel() {
         if(text.isNotBlank())
         {   val message=Messege(email,text)
             val newmsgRef=dbRef.push()
-            dbRef.setValue(message)
+            newmsgRef.setValue(message)
         }
     }
     fun getMessages(){
+
         val postlistener=object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val messagesList= mutableListOf<Messege>()
@@ -47,8 +50,11 @@ class ChatViewModel: ViewModel() {
                     val text=message.child("text").getValue(String::class.java).toString()
                     val conv=Messege(from,text)
                     messagesList.add(conv)
+
+
                 }
-               messeges=messagesList
+               messeges.value=messagesList
+                Log.d("t",messeges.toString())
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -11,12 +11,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -183,7 +183,7 @@ fun SignInScreen(nav:DestinationsNavigator) {
 fun Login(nav:DestinationsNavigator){
     lateinit var auth:FirebaseAuth
     auth = FirebaseAuth.getInstance()
-    auth.signOut()
+   // auth.signOut()
     var email by remember {
         mutableStateOf("")
     }
@@ -287,6 +287,73 @@ fun Login(nav:DestinationsNavigator){
 @Composable
 fun people(nav:DestinationsNavigator) {
     Box(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier
+            .align(Alignment.TopCenter)
+            .fillMaxWidth()
+            .height(70.dp)
+            .border(width = 0.5.dp, color = Color.LightGray)
+            , horizontalArrangement =Arrangement.SpaceBetween
+            , verticalAlignment = Alignment.CenterVertically){
+            IconButton(onClick = { /*TODO*/ }){
+                Icon(imageVector = Icons.Default.Search, contentDescription =null)
+            }
+            Text(text = "Home", fontSize = 25.sp, color = Color.Black)
+            Image(painter =painterResource(id = R.drawable.group_3454), modifier = Modifier
+                .size(50.dp)
+                .padding(end = 12.dp), contentDescription = null)
+        }
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 70.dp)
+                .fillMaxWidth()
+                .height(80.dp)
+                .clickable { nav.navigate(ChatDestination) },
+//                .border(width = 1.dp, color = Color.Gray),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+          Image(
+                    painter = painterResource(id = R.drawable.caty),
+                    contentDescription = null,
+              modifier = Modifier
+                  .size(70.dp)
+                  .padding(start = 15.dp)
+
+                )
+            Text(text = "Alberto Moedano", fontSize = 25.sp,
+
+                color = Color.Black,
+            modifier = Modifier.padding(end=90.dp)
+                , fontFamily = FontFamily.Cursive)
+
+            Image(
+                painter = painterResource(id = R.drawable.min),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(end = 12.dp)
+
+            )
+        }
+
+        }
+    }
+
+@Destination
+@Composable
+fun Chat(nav:DestinationsNavigator) {
+    var db: FirebaseDatabase;
+    var ref: DatabaseReference;
+    var viewModel = ChatViewModel()
+    lateinit var auth: FirebaseAuth
+    auth = FirebaseAuth.getInstance()
+
+    var mess by remember {
+        mutableStateOf("")
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -296,83 +363,71 @@ fun people(nav:DestinationsNavigator) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-          Image(
-                    painter = painterResource(id = R.drawable.group_3454),
-                    contentDescription = null,
-              modifier = Modifier
-                .size(43.dp)
-                .padding(end = 12.dp)
-
-                )
-            Text(text = "Alberto Moedano", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-            Text(text = "Send Message", fontSize = 20.sp, color = Color.Blue, modifier = Modifier.clickable {  nav.navigate(ChatDestination) })
-
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+            }
+            Text(text = "Ghaidaa Basha-agha", fontSize = 25.sp, color = Color.Black)
+            Image(
+                imageVector = Icons.Default.Call, modifier = Modifier
+                    .size(50.dp)
+                    .padding(end = 12.dp), contentDescription = null
+            )
         }
 
+
+
+    LazyColumn(modifier = Modifier .padding(vertical =  90.dp)) {
+        var vm = viewModel.messeges.value
+        items(vm) { item ->
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+
+            ) {
+                if(viewModel.myEmail==item.email) {
+                    Card(
+                        modifier = Modifier.padding(15.dp)
+                            .align(Alignment.End),
+                        RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp, bottomStart = 15.dp),
+                        backgroundColor = Orange,
+                    ) {
+                        Text(
+                            text = item.text, fontSize = 25.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }else{
+                    Card(
+                        modifier = Modifier.padding(15.dp),
+                        RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp, bottomEnd = 15.dp),
+                        backgroundColor = Color.LightGray,
+                    ) {
+                        Text(
+                            text = item.text, fontSize = 25.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 
-@Destination
-@Composable
-fun Chat(nav:DestinationsNavigator){
-   var db:FirebaseDatabase;
-    var ref:DatabaseReference;
-    var viewModel=ChatViewModel()
-    lateinit var auth:FirebaseAuth
-    auth = FirebaseAuth.getInstance()
+        Row(
+            modifier = Modifier.align(Alignment.BottomCenter)
 
-    var mess by remember {
-    mutableStateOf("")
-}
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier
-            .align(Alignment.TopCenter)
-            .fillMaxWidth()
-            .height(80.dp)
-            .border(width = 1.dp, color = Color.Gray)
-            , horizontalArrangement =Arrangement.SpaceBetween
-             , verticalAlignment = Alignment.CenterVertically){
-            IconButton(onClick = { /*TODO*/ }){
-                Icon(imageVector = Icons.Default.Search, contentDescription =null)
-            }
-            Text(text = "Alberto Moedano", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-            Image(painter =painterResource(id = R.drawable.group_3454), modifier = Modifier
-                .size(43.dp)
-                .padding(end = 12.dp), contentDescription = null)
-        }
-        Row( modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             TextField(
+                modifier = Modifier.fillMaxWidth().height(50.dp),
                 value = mess,
-                onValueChange = { mess = it },
-                modifier = Modifier.width(350.dp),
-
-                )
-            Button(onClick = {
-//                auth.currentUser?.email?.let { viewModel.sendMessage(it,mess) }
-                viewModel.sendMessage(viewModel.myEmail,mess)
-            }) {
-                Text(text = "Send")
-            }
+                onValueChange = { mess = it }
+            )
         }
-
-              }
-    LazyColumn(){
-        viewModel.getMessages()
-        items(viewModel.messeges) { item ->
-
-            Column( modifier = Modifier
-                .fillMaxSize()) {
-                Log.d("t",item.email)
-                Text(text = item.text, fontSize = 35.sp)
-            }
+        Button(modifier = Modifier.align(Alignment.BottomEnd).width(50.dp).clip(CircleShape).padding(bottom = 2.dp),
+            onClick = {
+            viewModel.sendMessage(viewModel.myEmail, mess)
+        }) {
+            Icon(imageVector = Icons.Default.Send, contentDescription =null )
         }
-
-    }
-              }
-
-
-
-
-
+}}
